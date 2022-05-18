@@ -142,11 +142,11 @@ either-applicative-id-law (Right x) =
     end
 
 either-applicative-homomorphism-law : {A B : Set} → (f : A → B) → (x : A) → ((pure f) <*> (pure x)) ≡ pure (f x)
-either-applicative-homomorphism-law f x =
+either-applicative-homomorphism-law {iApplicativeEither} f x =
     begin
         (pure f) <*> (pure x)
     =⟨⟩ -- applying pure
-        (Right f) <*> (Right x)
+        (Right f) <*> (Right {iApplicativeEither} x)
     =⟨⟩ -- applying <*>
         Right (f x)
     =⟨⟩ -- unapplying pure

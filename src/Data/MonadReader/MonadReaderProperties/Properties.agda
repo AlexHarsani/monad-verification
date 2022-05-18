@@ -60,11 +60,11 @@ applicative-id-law (Reader f) =
     end
 
 applicative-homomorphism-law : {A B R : Set} → (f : A → B) → (x : A) → ((pure f) <*> (pure x)) ≡ pure (f x)
-applicative-homomorphism-law f g = 
+applicative-homomorphism-law {iApplicativeReader} f g = 
     begin
         (pure f) <*> (pure g)
     =⟨⟩ -- applying pure
-        (Reader (const f)) <*> (Reader (const g))
+        (Reader (const f)) <*> (Reader {iApplicativeReader} (const g))
     =⟨⟩ -- applying <*>
         Reader (λ y → (const f) y ((const g) y))
     =⟨⟩ -- applying const
