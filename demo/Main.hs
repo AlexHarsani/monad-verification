@@ -1,4 +1,25 @@
-import qualified Data.Tree as Tree
+import Data.MonadReader.MyReader
+
+data User = User
+  { userName :: String
+  , userPassword :: String
+  }
+
+checkPassword :: String -> MyReader User Bool
+checkPassword p = do
+  actualP <- asks (userPassword)
+  return (p == actualP)
+
+welcomeMessage :: MyReader User String
+welcomeMessage = do
+  user <- ask
+  return ("Welcome " ++ (userName user) ++ "!")
+
+checkPasswordAndWelcome :: User -> String -> Maybe String
+checkPasswordAndWelcome u p =
+  if runReader (checkPassword p) u
+  then Just (runReader welcomeMessage u)
+  else Nothing
 
 main :: IO ()
-main = print $ Tree.fromList [5, 3, 8, 7, 1]
+main = print $ (checkPasswordAndWelcome (User "Alex" "aaa") "aaa")
