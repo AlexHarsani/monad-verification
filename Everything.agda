@@ -1,3 +1,3 @@
-import Data.MonadReader.MyReader
-import Data.Tree
-import Data.Tree.Properties
+import Data.MonadReader.Reader
+import Data.MonadReader.ReaderT
+import Data.MonadReader.MonadTrans
