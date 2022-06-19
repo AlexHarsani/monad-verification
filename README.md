@@ -1,4 +1,19 @@
-# Template for Practical Verification of Functional Libraries
+# Practical Verification of the Reader Monad
+
+This repository presents a verified implementation of the monad Reader and the monad 
+transformer ReaderT written in Agda. It can be translated to Haskell using [agda2hs](https://github.com/agda/agda2hs)
+This project was part of the course CSE3000 Research Project at TU Delft in 2022.
+
+## Structure
+
+- `demo/Main.hs` - Contains the demo presented in the paper
+- `lib/Control/MonadReader/` - Contains translated Haskell code
+- `src/Control/MonadReader/MonadTrans.agda` - Contains MonadTrans record type
+- `src/Control/MonadReader/Reader.agda` - Contains Reader record type with all its functions
+- `src/Control/MonadReader/ReaderT.agda` - Contains ReaderT record type with all its functions
+- `src/VerifiedTypeClasses/` - Contains record types of verified typeclasses with proofs
+- `src/ProofUtils/ProofFunctions.agda/` - Contains proof functions adapted from lecture notes of 
+  TU Delft course CSE3100 Functional Programming
 
 ## Prerequisites:
 
