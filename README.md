@@ -1,7 +1,7 @@
 # Practical Verification of the Reader Monad
 
 This repository presents a verified implementation of the monad Reader and the monad 
-transformer ReaderT written in Agda. It can be translated to Haskell using [agda2hs](https://github.com/agda/agda2hs)
+transformer ReaderT written in Agda. It can be translated to Haskell using [agda2hs](https://github.com/agda/agda2hs).
 This project was part of the course CSE3000 Research Project at TU Delft in 2022.
 
 ## Structure
