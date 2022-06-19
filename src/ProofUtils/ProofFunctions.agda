@@ -2,6 +2,8 @@ module ProofUtils.ProofFunctions where
 
 open import Haskell.Prelude
 
+-- Adapted from lecture notes of TU Delft course CSE3100 Functional Programming
+
 sym : {A : Set} {x y : A} → x ≡ y → y ≡ x
 sym refl = refl
 

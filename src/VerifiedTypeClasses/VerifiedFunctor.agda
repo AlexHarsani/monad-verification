@@ -1,4 +1,4 @@
-module Data.VerifiedTypeClasses.VerifiedFunctor where
+module VerifiedTypeClasses.VerifiedFunctor where
 
 open import Haskell.Prim
 open import Haskell.Prim.Functor
@@ -6,7 +6,7 @@ open import Haskell.Prim.Maybe
 open import Haskell.Prim.Either
 open import ProofUtils.ProofFunctions
 
-
+-- VerifiedFunctor record
 record VerifiedFunctor (f : Set → Set) {{@0 iF : Functor f}} : Set₁ where
     field
         @0 f-id-law : {a : Set} (x : f a) → fmap id x ≡ x
@@ -14,6 +14,7 @@ record VerifiedFunctor (f : Set → Set) {{@0 iF : Functor f}} : Set₁ where
         
 open VerifiedFunctor ⦃ ... ⦄ public 
 
+-- Example instances of Maybe and Either
 instance
     iVerifiedFunctorMaybe : VerifiedFunctor Maybe
     iVerifiedFunctorMaybe .f-id-law Nothing = 

@@ -1,3 +1,3 @@
-import Data.MonadReader.Reader
-import Data.MonadReader.ReaderT
-import Data.MonadReader.MonadTrans
+import Control.MonadReader.Reader
+import Control.MonadReader.ReaderT
+import Control.MonadReader.MonadTrans

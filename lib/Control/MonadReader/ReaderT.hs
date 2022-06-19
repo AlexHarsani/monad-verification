@@ -1,19 +1,19 @@
-module Data.MonadReader.ReaderT where
+module Control.MonadReader.ReaderT where
 
-import Data.MonadReader.MonadTrans
+import Control.MonadReader.MonadTrans
 
 data ReaderT r m a = MkReaderT{readerTComputation :: r -> m a}
 
 askT :: Monad m => ReaderT r m r
 askT = MkReaderT return
 
-asksT :: (r -> m a) -> ReaderT r m a
-asksT f = MkReaderT f
+asksT :: Monad m => (r -> a) -> ReaderT r m a
+asksT f = MkReaderT (return . f)
 
-localT :: (r -> r) -> ReaderT r m a -> ReaderT r m a
+localT :: Monad m => (r -> r) -> ReaderT r m a -> ReaderT r m a
 localT f (MkReaderT g) = MkReaderT (g . f)
 
-runReaderT :: ReaderT r m a -> r -> m a
+runReaderT :: Monad m => ReaderT r m a -> r -> m a
 runReaderT (MkReaderT f) = f
 
 instance (Monad m) => Functor (ReaderT r m) where
@@ -28,5 +28,5 @@ instance (Monad m) => Monad (ReaderT r m) where
       = MkReaderT (\ r -> runReaderT m r >>= \ a -> runReaderT (k a) r)
 
 instance MonadTrans (ReaderT r) where
-    liftM m = MkReaderT (\ _ -> m)
+    lift m = MkReaderT (\ _ -> m)
 

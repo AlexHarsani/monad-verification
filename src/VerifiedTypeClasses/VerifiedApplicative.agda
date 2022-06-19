@@ -1,4 +1,4 @@
-module Data.VerifiedTypeClasses.VerifiedApplicative where
+module VerifiedTypeClasses.VerifiedApplicative where
 
 open import Haskell.Prim
 open import Haskell.Prim.Applicative
@@ -6,7 +6,7 @@ open import Haskell.Prim.Maybe
 open import Haskell.Prim.Either
 open import ProofUtils.ProofFunctions
 
-
+-- VerifiedApplicative record
 record VerifiedApplicative (f : Set → Set) {{@0 iA : Applicative f}} : Set₁ where
     field
         @0 a-id-law : {a : Set} (x : f a) → (pure id <*> x) ≡ x
@@ -16,6 +16,7 @@ record VerifiedApplicative (f : Set → Set) {{@0 iA : Applicative f}} : Set₁ 
         
 open VerifiedApplicative ⦃ ... ⦄ public 
 
+-- Example instances of Maybe and Either
 instance
     iParametrizedVerifiedApplicativeMaybe : VerifiedApplicative Maybe
     iParametrizedVerifiedApplicativeMaybe .a-id-law Nothing = 
@@ -40,7 +41,7 @@ instance
     iParametrizedVerifiedApplicativeMaybe .a-homomorphism-law f x =
         begin
             (pure f) <*> (pure x)
-        =⟨⟩ -- applying pure
+        =⟨⟩ -- applying both pure
             (Just f) <*> (Just x)
         =⟨⟩ -- applying <*>
             Just (f x)
@@ -65,7 +66,7 @@ instance
             Just (f x)
         =⟨⟩ -- unapplying $
             Just (f $ x)
-        =⟨⟩ 
+        =⟨⟩ -- extracting f
             Just ((_$ x) f)
         =⟨⟩ -- unapplying <*>
             (Just (_$ x)) <*> (Just f)
@@ -176,7 +177,7 @@ instance
             Right (x y)
         =⟨⟩ -- unapplying $
             Right (x $ y)
-        =⟨⟩
+        =⟨⟩ -- extracting x
             Right ((_$ y) x)
         =⟨⟩ -- unapplying <*>
             (Right (_$ y)) <*> (Right x)

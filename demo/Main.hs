@@ -1,44 +1,27 @@
-import Data.MonadReader.Reader
-import Data.MonadReader.ReaderT
-import Data.MonadReader.MonadTrans
+import Control.MonadReader.ReaderT
+import Control.MonadReader.MonadTrans
 
+-- Demo used in Result section of the paper
 
-data User = User
-  { userName :: String
-  , userPassword :: String
+data Vault = Vault
+  { password :: String
+  , content :: String
   }
 
+hide_vault_content :: Vault -> Vault
+hide_vault_content (Vault p c) = (Vault p "nothing")
 
-checkPassword :: String -> Reader User Bool
-checkPassword p = do
-  actualP <- asks (userPassword)
-  return (p == actualP)
-
-
-{-
-welcomeMessage :: Reader User String
-welcomeMessage = do
-  user <- ask
-  return ("Welcome " ++ (userName user) ++ "!")
-
-
-checkPasswordAndWelcome :: User -> String -> Maybe String
-checkPasswordAndWelcome u p =
-  if runReader (checkPassword p) u
-  then Just (runReader welcomeMessage u)
-  else Nothing
--}
-
--- main :: IO ()
--- main = print $ (checkPasswordAndWelcome (User "Alex" "aaa") "aaa")
-
-
-printReaderContent :: ReaderT String IO ()
-printReaderContent = do
-    content <- askT
-    name <- liftM $ getLine 
-    liftM $ putStrLn ("The Message of the Day: " ++ content ++ name)
+openVault :: ReaderT Vault IO ()
+openVault = do
+    given_password <- lift $ getLine 
+    actual_password <- asksT (password)
+    if (given_password /= actual_password)
+      then do
+        vault_content <- localT (hide_vault_content) (asksT (content))
+        lift $ putStrLn ("You get: " ++ vault_content)
+      else do 
+        vault_content <- asksT (content)
+        lift $ putStrLn ("You get: " ++ vault_content)
 
 main :: IO ()
-main = runReaderT printReaderContent "Hello, "
-
+main = runReaderT openVault (Vault "secretPassword" "diamonds")

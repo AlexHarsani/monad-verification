@@ -1,4 +1,4 @@
-module Data.MonadReader.Reader where
+module Control.MonadReader.Reader where
 
 data Reader r a = MkReader{readerComputation :: r -> a}
 

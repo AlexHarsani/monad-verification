@@ -1,4 +1,4 @@
-module Data.VerifiedTypeClasses.LegacyVerifiedMonad where
+module VerifiedTypeClasses.VerifiedMonad where
 
 open import Haskell.Prim
 open import Haskell.Prim.Monad
@@ -6,19 +6,19 @@ open import Haskell.Prim.Maybe
 open import Haskell.Prim.Either
 open import ProofUtils.ProofFunctions
 
-
-record LegacyVerifiedMonad (m : Set → Set) : Set₁ where
+-- VerifiedMonad record
+record VerifiedMonad (m : Set → Set) {{@0 iM : Monad m}} : Set₁ where
     field
-        overlap {{ super }} : Monad m
-        @0 left-identity-law : {A B : Set} (x : A) → (g : A → (m B)) → (return {{super}} x >>= g) ≡ (g x)
-        @0 right-identity-law : {A : Set} → (x : m A) → (x >>= return) ≡ x
-        @0 associative-law : {A B C : Set} → (x : m A) → (f : A → (m B)) → (g : B → (m C)) → ((x >>= f) >>= g) ≡ (x >>= (λ y → ((f y) >>= g)))
+        @0 m-left-identity-law : {A B : Set} (x : A) → (g : A → (m B)) → (return {{iM}} x >>= g) ≡ (g x)
+        @0 m-right-identity-law : {A : Set} → (x : m A) → (x >>= return) ≡ x
+        @0 m-associative-law : {A B C : Set} → (x : m A) → (f : A → (m B)) → (g : B → (m C)) → ((x >>= f) >>= g) ≡ (x >>= (λ y → ((f y) >>= g)))
 
-open LegacyVerifiedMonad ⦃ ... ⦄ public 
+open VerifiedMonad ⦃ ... ⦄ public 
 
+-- Example instances of Maybe and Either
 instance
-    iVerifiedMonadMaybe : LegacyVerifiedMonad Maybe
-    iVerifiedMonadMaybe .left-identity-law x f = 
+    iVerifiedMonadMaybe : VerifiedMonad Maybe
+    iVerifiedMonadMaybe .m-left-identity-law x f = 
         begin
             return x >>= f
         =⟨⟩ -- applying return
@@ -28,7 +28,7 @@ instance
         =⟨⟩ -- applying maybe
             f x
         end
-    iVerifiedMonadMaybe .right-identity-law Nothing =
+    iVerifiedMonadMaybe .m-right-identity-law Nothing =
         begin
             Nothing >>= return
         =⟨⟩ -- applying >>=
@@ -36,7 +36,7 @@ instance
         =⟨⟩ -- applying maybe
             Nothing
         end
-    iVerifiedMonadMaybe .right-identity-law (Just x) = 
+    iVerifiedMonadMaybe .m-right-identity-law (Just x) = 
         begin
             (Just x) >>= return
         =⟨⟩ -- applying >>=
@@ -47,10 +47,10 @@ instance
             Just x
         end
 
-    iVerifiedMonadMaybe .associative-law Nothing f g =
+    iVerifiedMonadMaybe .m-associative-law Nothing f g =
         begin
             (Nothing >>= f) >>= g
-        =⟨⟩ -- applying >>=
+        =⟨⟩ -- applying inner >>=
             (maybe Nothing f Nothing) >>= g
         =⟨⟩ -- applying maybe
             Nothing >>= g
@@ -59,14 +59,14 @@ instance
         =⟨⟩ -- applying maybe
             Nothing
         end
-    iVerifiedMonadMaybe .associative-law (Just x) f g = 
+    iVerifiedMonadMaybe .m-associative-law (Just x) f g = 
         begin
             ((Just x) >>= f) >>= g
-        =⟨⟩ -- applying >>=
+        =⟨⟩ -- applying inner >>=
             (maybe Nothing f (Just x)) >>= g
         =⟨⟩ -- applying maybe
             (f x) >>= g
-        =⟨⟩ -- anonymizing function
+        =⟨⟩ -- using lambda notation
             (λ y → (f y) >>= g) x
         =⟨⟩ -- unapplying maybe
             maybe Nothing (λ y → (f y) >>= g) (Just x)
@@ -74,8 +74,8 @@ instance
             (Just x) >>= ((λ y → f y >>= g))
         end
 
-    iVerifiedMonadEither : {a : Set} → LegacyVerifiedMonad (Either a)
-    iVerifiedMonadEither .left-identity-law x f = 
+    iVerifiedMonadEither : {a : Set} → VerifiedMonad (Either a)
+    iVerifiedMonadEither .m-left-identity-law x f = 
         begin
             return x >>= f
         =⟨⟩ -- applying return
@@ -86,15 +86,15 @@ instance
             f x
         end
 
-    iVerifiedMonadEither .right-identity-law (Left x) =
+    iVerifiedMonadEither .m-right-identity-law (Left x) =
         begin
             (Left x) >>= return
-        =⟨⟩ -- applying >>-
+        =⟨⟩ -- applying >>=
             either (Left) return (Left x)
         =⟨⟩ -- applying either
             (Left x)
         end
-    iVerifiedMonadEither .right-identity-law (Right x) = 
+    iVerifiedMonadEither .m-right-identity-law (Right x) = 
         begin
             (Right x) >>= return
         =⟨⟩ -- applying >>=
@@ -105,10 +105,10 @@ instance
             Right x
         end
 
-    iVerifiedMonadEither .associative-law (Left x) f g =
+    iVerifiedMonadEither .m-associative-law (Left x) f g =
         begin
             ((Left x) >>= f) >>= g
-        =⟨⟩ -- applying >>=
+        =⟨⟩ -- applying inner >>=
             (either (Left) f (Left x)) >>= g
         =⟨⟩ -- applying either
             (Left x) >>= g
@@ -117,14 +117,14 @@ instance
         =⟨⟩ -- applying either
             Left x
         end
-    iVerifiedMonadEither .associative-law (Right x) f g = 
+    iVerifiedMonadEither .m-associative-law (Right x) f g = 
         begin
             ((Right x) >>= f) >>= g
-        =⟨⟩ -- applying >>=
+        =⟨⟩ -- applying inner >>=
             (either (Left) f (Right x)) >>= g
         =⟨⟩ -- applying either
             (f x) >>= g
-        =⟨⟩ -- anonymizing function
+        =⟨⟩ -- using lambda notation
             (λ y → (f y) >>= g) x
         =⟨⟩ -- unapplying either
             either (Left) (λ y → (f y) >>= g) (Right x)
